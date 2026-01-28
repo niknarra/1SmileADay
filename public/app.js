@@ -614,21 +614,36 @@ function renderCalendar() {
         // Check if date is in future
         const checkDate = new Date(year, month, day);
         const isFuture = checkDate > todayDate;
+        const isPast = checkDate < todayDate;
 
         const classes = ['calendar-day'];
+        let tooltip = '';
+        
         if (isFuture) {
             classes.push('future');
         } else if (isSkipped) {
             classes.push('skipped');
+            tooltip = 'Day skipped';
         } else if (hasRealEntry) {
             // Add rating class for heatmap coloring
             if (rating) {
                 classes.push(`rating-${rating}`);
+                tooltip = getRatingLabel(rating);
             } else {
                 classes.push('has-entry');
+                tooltip = 'Smile logged';
+            }
+        } else if (isPast && !isTodayDate) {
+            // Past day with no entry
+            tooltip = 'No smile logged';
+        }
+        
+        if (isTodayDate) {
+            classes.push('today');
+            if (!hasRealEntry && !isSkipped) {
+                tooltip = 'Today - log your smile!';
             }
         }
-        if (isTodayDate) classes.push('today');
 
         // Determine click behavior
         let clickHandler = '';
@@ -638,8 +653,10 @@ function renderCalendar() {
             cursor = 'pointer';
         }
 
+        const tooltipAttr = tooltip ? `data-tooltip="${tooltip}"` : '';
+
         calendarDays += `
-            <div class="${classes.join(' ')}" ${clickHandler} style="cursor: ${cursor}">
+            <div class="${classes.join(' ')}" ${clickHandler} ${tooltipAttr} style="cursor: ${cursor}">
                 ${day}
             </div>
         `;
@@ -663,6 +680,10 @@ function renderCalendar() {
                 ${calendarDays}
             </div>
             <div class="calendar-legend">
+                <div class="calendar-legend-item">
+                    <div class="legend-dot has-entry"></div>
+                    <span>Logged</span>
+                </div>
                 <div class="calendar-legend-item">
                     <div class="legend-dot rating-1"></div>
                     <span>Small win</span>
