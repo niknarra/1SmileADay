@@ -297,6 +297,48 @@ function isMinCharsReached(inputId) {
 // ============================================
 // UI: AUTH SCREEN
 // ============================================
+// Example smiles for marquee background
+const EXAMPLE_SMILES = [
+    "I spoke with my best friend today",
+    "A stranger held the door for me",
+    "I made a sandwich that was delicious",
+    "My dog was excited to see me",
+    "I finished a book I've been reading",
+    "The sunset looked incredible",
+    "Someone complimented my shirt",
+    "I went for a drive blasting music",
+    "My coffee was perfect this morning",
+    "I finally fixed that bug",
+    "A kid waved at me from a car",
+    "I took a really good nap",
+    "My mom called just to say hi",
+    "I found money in my old jacket",
+    "The first bite of pizza was amazing",
+    "I laughed until my stomach hurt",
+    "A song I love came on the radio",
+    "I got a window seat on the train",
+    "My plant grew a new leaf",
+    "I made someone laugh today",
+    "The shower was the perfect temperature",
+    "I beat my high score",
+    "A friend sent me a meme",
+    "I woke up before my alarm"
+];
+
+function renderMarqueeBackground() {
+    // Create enough rows to fill the viewport (approximately 25-30 rows)
+    const rows = [];
+    for (let r = 0; r < 28; r++) {
+        // Shuffle and duplicate for seamless loop
+        const shuffled = [...EXAMPLE_SMILES].sort(() => Math.random() - 0.5);
+        const items = [...shuffled, ...shuffled].map(smile => 
+            `<span class="marquee-item">${smile}</span>`
+        ).join('');
+        rows.push(`<div class="marquee-row">${items}</div>`);
+    }
+    return `<div class="marquee-background">${rows.join('')}</div>`;
+}
+
 function renderAuthScreen() {
     const formTitle = state.isSignUp ? 'Sign Up' : 'Log In';
     const toggleText = state.isSignUp ? 'Already have an account? Log in' : 'New? Sign up';
@@ -1042,12 +1084,15 @@ function render() {
 
     if (!state.user) {
         app.innerHTML = `
+            ${renderMarqueeBackground()}
             <div class="container">
-                <div class="header">
-                    <h1>1 SMILE A DAY</h1>
-                    <p>Log one thing that made you smile. Every day.</p>
+                <div class="auth-content-panel">
+                    <div class="header">
+                        <h1>1 SMILE A DAY</h1>
+                        <p>Log one thing that made you smile. Every day.</p>
+                    </div>
+                    ${renderAuthScreen()}
                 </div>
-                ${renderAuthScreen()}
             </div>
         `;
     } else if (state.showProfile) {
